@@ -7,6 +7,20 @@ use crate::{
     routes::models::{CreateUser, User},
 };
 
+/// State shared across all routes, our `cache`
+pub struct AppState<T>(T)
+where
+    T: UsersCrud;
+
+impl<T> AppState<T>
+where
+    T: UsersCrud,
+{
+    pub fn new(state: T) -> Self {
+        Self(state)
+    }
+}
+
 // Here we are creating abstraction over CRUD like operations, because later on we can switch it
 // with different cache implementation.
 pub trait UsersCrud {
@@ -19,25 +33,6 @@ pub trait UsersCrud {
     fn get_user(id: UserId) -> domain::User;
 
     fn get_users() -> Vec<domain::User>;
-}
-
-/// State shared across all routes, our `cache`
-pub struct AppState<T>
-where
-    T: UsersCrud,
-{
-    users: HashMap<domain::UserId, T>,
-}
-
-impl<T> AppState<T>
-where
-    T: UsersCrud,
-{
-    pub fn new() -> Self {
-        Self {
-            users: HashMap::<domain::UserId, T>::new(),
-        }
-    }
 }
 
 // State non abstract:

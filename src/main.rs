@@ -9,7 +9,7 @@ use axum::{
 
 use crate::{
     routes::users::{self, create_user, delete_user, get_user, get_users, patch_user},
-    state::AppState,
+    state::{cached::CachedState, AppState},
 };
 
 mod domain;
@@ -22,18 +22,20 @@ const ADDR: &'static str = "0.0.0.0:3000";
 async fn main() {
     println!("Hello, world!");
 
-    let state = Arc::new(Mutex::new(AppState::new()));
+    let cached_state = CachedState::new();
+
+    let state = Arc::new(Mutex::new(AppState::<CachedState>::new(cached_state)));
 
     let app = Router::new()
         .route("/users", get(get_users))
         .with_state(Arc::clone(&state))
-        .route("users", post(create_user))
+        .route("/users", post(create_user))
         .with_state(Arc::clone(&state))
         .route("/users/:id", get(get_user))
         .with_state(Arc::clone(&state))
         .route("/users/:id", patch(patch_user))
         .with_state(Arc::clone(&state))
-        .route("users/:id", delete(delete_user))
+        .route("/users/:id", delete(delete_user))
         .with_state(state);
 
     axum::Server::bind(&ADDR.parse().unwrap())
