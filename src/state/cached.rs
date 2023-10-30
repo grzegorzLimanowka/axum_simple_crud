@@ -26,16 +26,16 @@ impl CachedState {
 // just implementation of `UsersCrud` trait for struct `CachedState`
 #[async_trait]
 impl UsersCrud for CachedState {
-    async fn create_user(&mut self, id: UserId, data: domain::User) -> Result<(), AppError> {
+    async fn create_user(&mut self, id: UserId, data: domain::User) -> Result<User, AppError> {
         let mut users = self.users.lock().await;
 
         if let Some(user) = users.get(&id) {
             return Err(AppError::UserAlreadyExist(id));
         }
 
-        users.insert(id, data);
+        users.insert(id, data.clone());
 
-        Ok(())
+        Ok(data)
     }
 
     async fn update_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<(), AppError> {

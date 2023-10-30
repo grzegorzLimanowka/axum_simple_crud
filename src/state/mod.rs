@@ -43,7 +43,11 @@ where
 // with different cache implementation.
 #[async_trait]
 pub trait UsersCrud {
-    async fn create_user(&mut self, id: UserId, data: domain::User) -> Result<(), AppError>;
+    async fn create_user(
+        &mut self,
+        id: UserId,
+        data: domain::User,
+    ) -> Result<domain::User, AppError>;
 
     async fn update_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<(), AppError>;
 

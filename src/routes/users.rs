@@ -51,33 +51,19 @@ pub async fn get_user(
 pub async fn create_user(
     State(state): State<Arc<Mutex<AppState<CachedState>>>>,
     Json(payload): Json<CreateUser>,
-) {
+) -> Json<Value> {
     let mut state = state.clone();
     let id = UserId::new(uuid::Uuid::new_v4().to_string());
 
-    // let user = domain::User {
-    //     id,
-    //     name: ,
-    //     surname: todo!(),
-    //     age: todo!(),
-    // }
+    let user: domain::User = (id.clone(), payload).try_into().unwrap();
 
-    // let user: domain::User = (id.clone(), payload).try_into().unwrap();
-
-    // if let Ok(mutuser) = &mut state.create_user(id, user).await {
-    //     //
-    // }
-
-    // if let Ok(Some(users)) = state.create_user(payload).await {
-    //     let u: Vec<models::User> = users
-    //         .into_iter()
-    //         .map(|u| models::User::try_from(u).unwrap())
-    //         .collect();
+    // if let Ok(user) = &mut state.lock().await.create_user(id, user).await {
+    //     let u: models::User = user.try_into().unwrap();
 
     //     return Json(serde_json::to_value(u).unwrap());
     // }
 
-    // Json(json!({}))
+    Json(json!({}))
 }
 
 pub async fn patch_user(
