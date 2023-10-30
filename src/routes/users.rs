@@ -67,10 +67,11 @@ pub async fn create_user(
 // TODO: Remove unwraps, return HTTP errors to client with proper codes
 pub async fn patch_user(
     State(state): State<Arc<Mutex<AppState<CachedState>>>>,
+    Path(id): Path<String>,
     Json(payload): Json<UpdateUser>,
 ) -> Json<Value> {
-    let id = UserId::new(uuid::Uuid::new_v4().to_string());
-    let user_update = payload.try_into().unwrap();
+    let id = UserId::new(id);
+    let user_update = (id.clone(), payload).try_into().unwrap();
 
     if let Ok(user) = &mut state.lock().await.update_user(id, user_update).await {
         let u: models::User = user.try_into().unwrap();

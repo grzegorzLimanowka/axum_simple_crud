@@ -18,7 +18,6 @@ pub struct CreateUser {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateUser {
-    pub id: String,
     pub name: Option<String>,
     pub surname: Option<String>,
     pub age: Option<u8>,

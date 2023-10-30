@@ -67,7 +67,14 @@ impl UsersCrud for CachedState {
     ) -> Result<User, AppError> {
         let mut users = self.users.lock().await;
 
+        println!("2. {id:?} {users:?}");
+
+        let x = users.get_mut(&id);
+        println!("2x: {x:?}");
+
         if let Some(user) = users.get_mut(&id) {
+            println!("3. {user:?}");
+
             if let Some(name) = data.name {
                 user.name = name;
             }
