@@ -1,5 +1,8 @@
 use std::collections::HashMap;
 
+use axum::async_trait;
+use tokio::sync::Mutex;
+
 use crate::{
     domain::{self, User, UserId},
     error::AppError,
@@ -9,30 +12,35 @@ use super::UsersCrud;
 
 /// State shared across all routes, our `cache`
 pub struct CachedState {
-    users: HashMap<domain::UserId, domain::User>,
+    users: Mutex<HashMap<domain::UserId, domain::User>>,
 }
 
 impl CachedState {
     pub fn new() -> Self {
         Self {
-            users: HashMap::<domain::UserId, domain::User>::new(),
+            users: Mutex::new(HashMap::<domain::UserId, domain::User>::new()),
         }
     }
 }
 
+#[async_trait]
 impl UsersCrud for CachedState {
-    fn create_user(&mut self, id: UserId, data: domain::User) -> Result<(), AppError> {
-        if let Some(user) = self.users.get(&id) {
-            return Err(AppError::UserAlreadyExist(id));
-        };
+    async fn create_user(&mut self, id: UserId, data: domain::User) -> Result<(), AppError> {
+        let mut users = self.users.lock().await;
 
-        self.users.insert(id, data);
+        if let Some(user) = users.get(&id) {
+            return Err(AppError::UserAlreadyExist(id));
+        }
+
+        users.insert(id, data);
 
         Ok(())
     }
 
-    fn update_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<(), AppError> {
-        if let Some(user) = self.users.get_mut(&id) {
+    async fn update_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<(), AppError> {
+        let mut users = self.users.lock().await;
+
+        if let Some(user) = users.get_mut(&id) {
             if let Some(name) = data.name {
                 user.name = name;
             }
@@ -44,28 +52,38 @@ impl UsersCrud for CachedState {
             if let Some(age) = data.age {
                 user.age = age;
             }
-        };
 
-        Ok(())
+            return Ok(());
+        }
+
+        Err(AppError::UserNotFound(id))
     }
 
-    fn delete_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<User, AppError> {
-        if let Some(deleted) = self.users.remove(&id) {
+    async fn delete_user(
+        &mut self,
+        id: UserId,
+        data: domain::UserPartial,
+    ) -> Result<User, AppError> {
+        let mut users = self.users.lock().await;
+
+        if let Some(deleted) = users.remove(&id) {
             return Ok(deleted);
         }
 
         Err(AppError::UserNotFound(id))
     }
 
-    fn get_user(&self, id: UserId) -> Result<std::option::Option<domain::User>, AppError> {
-        if let Some(user) = self.users.get(&id) {
+    async fn get_user(&self, id: UserId) -> Result<std::option::Option<domain::User>, AppError> {
+        let users = self.users.lock().await;
+
+        if let Some(user) = users.get(&id) {
             return Ok(Some(user.clone()));
         };
 
         Err(AppError::UserNotFound(id))
     }
 
-    fn get_users(&self) -> Result<std::option::Option<Vec<domain::User>>, AppError> {
+    async fn get_users(&self) -> Result<std::option::Option<Vec<domain::User>>, AppError> {
         todo!()
     }
 }

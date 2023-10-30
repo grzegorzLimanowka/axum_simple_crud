@@ -22,7 +22,7 @@ const ADDR: &'static str = "0.0.0.0:3000";
 #[tokio::main]
 async fn main() {
     let cached_state = CachedState::new();
-    let state = Arc::new(Mutex::new(AppState::<CachedState>::new(cached_state)));
+    let state = Arc::new(AppState::<CachedState>::new(cached_state));
 
     let app = Router::new()
         .route("/users", get(get_users))

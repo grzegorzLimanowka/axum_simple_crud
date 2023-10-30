@@ -13,31 +13,28 @@ use crate::state::{cached::CachedState, AppState};
 
 use super::models::{CreateUser, UpdateUser};
 
-pub async fn get_users(State(state): State<Arc<Mutex<AppState<CachedState>>>>) {
+pub async fn get_users(State(state): State<Arc<AppState<CachedState>>>) {
     //
 }
 
-pub async fn get_user(
-    State(state): State<Arc<Mutex<AppState<CachedState>>>>,
-    Path(id): Path<String>,
-) {
+pub async fn get_user(State(state): State<Arc<AppState<CachedState>>>, Path(id): Path<String>) {
     //
 }
 
 pub async fn create_user(
-    State(state): State<Arc<Mutex<AppState<CachedState>>>>,
+    State(state): State<Arc<AppState<CachedState>>>,
     Json(payload): Json<CreateUser>,
 ) {
     //
 }
 
 pub async fn patch_user(
-    State(state): State<Arc<Mutex<AppState<CachedState>>>>,
+    State(state): State<Arc<AppState<CachedState>>>,
     Json(payload): Json<UpdateUser>,
 ) {
     //
 }
 
-pub async fn delete_user(State(state): State<Arc<Mutex<AppState<CachedState>>>>) {
+pub async fn delete_user(State(state): State<Arc<AppState<CachedState>>>) {
     //
 }
