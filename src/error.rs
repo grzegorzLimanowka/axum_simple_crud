@@ -8,4 +8,5 @@ pub enum AppError {
     UserAlreadyExist(UserId),
     #[error("User with given id {0} not found !")]
     UserNotFound(UserId),
+    // TODO: Conversion error
 }

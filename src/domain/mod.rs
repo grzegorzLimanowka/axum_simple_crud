@@ -1,5 +1,7 @@
 use std::{fmt::Display, ops::Deref};
 
+pub mod conversions;
+
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct UserId(String);
 
@@ -23,7 +25,7 @@ impl Display for UserId {
     }
 }
 
-#[derive(Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct User {
     pub id: UserId,
     pub name: String,
@@ -31,7 +33,7 @@ pub struct User {
     pub age: u8,
 }
 
-#[derive(Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct UserPartial {
     pub id: UserId,
     pub name: Option<String>,

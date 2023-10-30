@@ -3,22 +3,22 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct User {
-    id: String,
-    name: String,
-    surname: String,
-    age: u8,
+    pub id: String,
+    pub name: String,
+    pub surname: String,
+    pub age: u8,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateUser {
-    name: String,
-    surname: String,
-    age: u8,
+    pub name: String,
+    pub surname: String,
+    pub age: u8,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateUser {
-    name: Option<String>,
-    surname: Option<String>,
-    age: Option<u8>,
+    pub name: Option<String>,
+    pub surname: Option<String>,
+    pub age: Option<u8>,
 }

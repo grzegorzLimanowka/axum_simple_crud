@@ -23,6 +23,7 @@ impl CachedState {
     }
 }
 
+// just implementation of `UsersCrud` trait for struct `CachedState`
 #[async_trait]
 impl UsersCrud for CachedState {
     async fn create_user(&mut self, id: UserId, data: domain::User) -> Result<(), AppError> {
@@ -84,6 +85,14 @@ impl UsersCrud for CachedState {
     }
 
     async fn get_users(&self) -> Result<std::option::Option<Vec<domain::User>>, AppError> {
-        todo!()
+        let users = self
+            .users
+            .lock()
+            .await
+            .iter()
+            .map(|v| v.1.clone())
+            .collect::<Vec<User>>();
+
+        Ok(Some(users))
     }
 }
