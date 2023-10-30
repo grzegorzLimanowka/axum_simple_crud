@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    domain::{self, UserId},
+    domain::{self, User, UserId},
     error::AppError,
 };
 
@@ -49,12 +49,20 @@ impl UsersCrud for CachedState {
         Ok(())
     }
 
-    fn delete_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<(), AppError> {
-        todo!()
+    fn delete_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<User, AppError> {
+        if let Some(deleted) = self.users.remove(&id) {
+            return Ok(deleted);
+        }
+
+        Err(AppError::UserNotFound(id))
     }
 
     fn get_user(&self, id: UserId) -> Result<std::option::Option<domain::User>, AppError> {
-        todo!()
+        if let Some(user) = self.users.get(&id) {
+            return Ok(Some(user.clone()));
+        };
+
+        Err(AppError::UserNotFound(id))
     }
 
     fn get_users(&self) -> Result<std::option::Option<Vec<domain::User>>, AppError> {

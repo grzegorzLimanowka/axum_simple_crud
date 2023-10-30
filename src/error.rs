@@ -6,4 +6,6 @@ use crate::domain::UserId;
 pub enum AppError {
     #[error("User with given id {0} already exists !")]
     UserAlreadyExist(UserId),
+    #[error("User with given id {0} not found !")]
+    UserNotFound(UserId),
 }

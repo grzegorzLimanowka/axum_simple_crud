@@ -13,8 +13,6 @@ use crate::state::{cached::CachedState, AppState};
 
 use super::models::{CreateUser, UpdateUser};
 
-//state: Arc<AppState>
-
 pub async fn get_users(State(state): State<Arc<Mutex<AppState<CachedState>>>>) {
     //
 }

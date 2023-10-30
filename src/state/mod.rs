@@ -3,9 +3,9 @@ pub mod cached;
 use std::collections::HashMap;
 
 use crate::{
-    domain::{self, UserId},
+    domain::{self, User, UserId},
     error::AppError,
-    routes::models::{CreateUser, User},
+    routes::models::CreateUser,
 };
 
 /// State shared across all routes. Underlying type must implement `UsersCrud` trait
@@ -29,7 +29,7 @@ pub trait UsersCrud {
 
     fn update_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<(), AppError>;
 
-    fn delete_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<(), AppError>;
+    fn delete_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<User, AppError>;
 
     fn get_user(&self, id: UserId) -> Result<Option<domain::User>, AppError>;
 
