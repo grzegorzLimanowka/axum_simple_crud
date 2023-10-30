@@ -51,7 +51,7 @@ impl UsersCrud for CachedState {
     async fn create_user(&mut self, id: UserId, data: domain::User) -> Result<User, AppError> {
         let mut users = self.users.lock().await;
 
-        if let Some(user) = users.get(&id) {
+        if let Some(_) = users.get(&id) {
             return Err(AppError::UserAlreadyExist(id));
         }
 
@@ -67,14 +67,7 @@ impl UsersCrud for CachedState {
     ) -> Result<User, AppError> {
         let mut users = self.users.lock().await;
 
-        println!("2. {id:?} {users:?}");
-
-        let x = users.get_mut(&id);
-        println!("2x: {x:?}");
-
         if let Some(user) = users.get_mut(&id) {
-            println!("3. {user:?}");
-
             if let Some(name) = data.name {
                 user.name = name;
             }

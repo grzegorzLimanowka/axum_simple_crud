@@ -1,16 +1,12 @@
 pub mod cached;
 
-use std::{
-    collections::HashMap,
-    ops::{Deref, DerefMut},
-};
+use std::ops::{Deref, DerefMut};
 
 use axum::async_trait;
 
 use crate::{
-    domain::{self, User, UserId, UserPartial},
+    domain::{User, UserId, UserPartial},
     error::AppError,
-    routes::models::CreateUser,
 };
 
 // State shared across all routes. Underlying type must implement `UsersCrud` trait

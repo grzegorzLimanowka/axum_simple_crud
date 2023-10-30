@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use std::sync::Arc;
 
 use axum::{
@@ -9,7 +7,7 @@ use axum::{
 use tokio::sync::Mutex;
 
 use crate::{
-    routes::users::{self, create_user, delete_user, get_user, get_users, patch_user},
+    routes::users::{create_user, delete_user, get_user, get_users, patch_user},
     state::{cached::CachedState, AppState},
 };
 
@@ -18,7 +16,7 @@ mod error;
 mod routes;
 mod state;
 
-const ADDR: &'static str = "0.0.0.0:3000";
+const ADDR: &str = "0.0.0.0:3000";
 
 #[tokio::main]
 async fn main() {
@@ -39,5 +37,6 @@ async fn main() {
 
     axum::Server::bind(&ADDR.parse().unwrap())
         .serve(app.into_make_service())
-        .await;
+        .await
+        .unwrap()
 }

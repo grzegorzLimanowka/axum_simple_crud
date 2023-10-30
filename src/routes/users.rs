@@ -8,7 +8,6 @@ use axum::{
 };
 use serde_json::{json, Value};
 use tokio::sync::Mutex;
-use uuid::Uuid;
 
 use crate::{
     domain::{self, UserId},
