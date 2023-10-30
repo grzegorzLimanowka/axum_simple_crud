@@ -23,57 +23,9 @@ impl CachedState {
     }
 }
 
-// just implementation of `UsersCrud` trait for struct `CachedState`
+// Implementation of `UsersCrud` trait for struct `CachedState`
 #[async_trait]
 impl UsersCrud for CachedState {
-    async fn create_user(&mut self, id: UserId, data: domain::User) -> Result<User, AppError> {
-        let mut users = self.users.lock().await;
-
-        if let Some(user) = users.get(&id) {
-            return Err(AppError::UserAlreadyExist(id));
-        }
-
-        users.insert(id, data.clone());
-
-        Ok(data)
-    }
-
-    async fn update_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<(), AppError> {
-        let mut users = self.users.lock().await;
-
-        if let Some(user) = users.get_mut(&id) {
-            if let Some(name) = data.name {
-                user.name = name;
-            }
-
-            if let Some(surname) = data.surname {
-                user.surname = surname;
-            }
-
-            if let Some(age) = data.age {
-                user.age = age;
-            }
-
-            return Ok(());
-        }
-
-        Err(AppError::UserNotFound(id))
-    }
-
-    async fn delete_user(
-        &mut self,
-        id: UserId,
-        data: domain::UserPartial,
-    ) -> Result<User, AppError> {
-        let mut users = self.users.lock().await;
-
-        if let Some(deleted) = users.remove(&id) {
-            return Ok(deleted);
-        }
-
-        Err(AppError::UserNotFound(id))
-    }
-
     async fn get_user(&self, id: UserId) -> Result<std::option::Option<domain::User>, AppError> {
         let users = self.users.lock().await;
 
@@ -94,5 +46,53 @@ impl UsersCrud for CachedState {
             .collect::<Vec<User>>();
 
         Ok(Some(users))
+    }
+
+    async fn create_user(&mut self, id: UserId, data: domain::User) -> Result<User, AppError> {
+        let mut users = self.users.lock().await;
+
+        if let Some(user) = users.get(&id) {
+            return Err(AppError::UserAlreadyExist(id));
+        }
+
+        users.insert(id, data.clone());
+
+        Ok(data)
+    }
+
+    async fn update_user(
+        &mut self,
+        id: UserId,
+        data: domain::UserPartial,
+    ) -> Result<User, AppError> {
+        let mut users = self.users.lock().await;
+
+        if let Some(user) = users.get_mut(&id) {
+            if let Some(name) = data.name {
+                user.name = name;
+            }
+
+            if let Some(surname) = data.surname {
+                user.surname = surname;
+            }
+
+            if let Some(age) = data.age {
+                user.age = age;
+            }
+
+            return Ok(user.clone());
+        }
+
+        Err(AppError::UserNotFound(id))
+    }
+
+    async fn delete_user(&mut self, id: UserId) -> Result<User, AppError> {
+        let mut users = self.users.lock().await;
+
+        if let Some(deleted) = users.remove(&id) {
+            return Ok(deleted);
+        }
+
+        Err(AppError::UserNotFound(id))
     }
 }

@@ -1,6 +1,9 @@
 use crate::{
     domain::{self, UserId},
-    routes::{self, models::CreateUser},
+    routes::{
+        self,
+        models::{CreateUser, UpdateUser},
+    },
 };
 
 impl TryFrom<routes::models::User> for domain::User {
@@ -25,6 +28,19 @@ impl TryFrom<(UserId, CreateUser)> for domain::User {
             name: u.1.name,
             surname: u.1.surname,
             age: u.1.age,
+        })
+    }
+}
+
+impl TryFrom<UpdateUser> for domain::UserPartial {
+    type Error = ();
+
+    fn try_from(u: UpdateUser) -> Result<Self, Self::Error> {
+        Ok(Self {
+            id: UserId::new(u.id),
+            name: todo!(),
+            surname: todo!(),
+            age: todo!(),
         })
     }
 }

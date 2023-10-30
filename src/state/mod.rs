@@ -8,7 +8,7 @@ use std::{
 use axum::async_trait;
 
 use crate::{
-    domain::{self, User, UserId},
+    domain::{self, User, UserId, UserPartial},
     error::AppError,
     routes::models::CreateUser,
 };
@@ -39,25 +39,27 @@ where
     }
 }
 
+// Required for mutations of wrapped structure
+impl<T> DerefMut for AppState<T>
+where
+    T: UsersCrud,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 // Here we are creating abstraction over CRUD like operations, because later on we can switch it
 // with different cache implementation.
 #[async_trait]
 pub trait UsersCrud {
-    async fn create_user(
-        &mut self,
-        id: UserId,
-        data: domain::User,
-    ) -> Result<domain::User, AppError>;
+    async fn get_user(&self, id: UserId) -> Result<Option<User>, AppError>;
 
-    async fn update_user(&mut self, id: UserId, data: domain::UserPartial) -> Result<(), AppError>;
+    async fn get_users(&self) -> Result<Option<Vec<User>>, AppError>;
 
-    async fn delete_user(
-        &mut self,
-        id: UserId,
-        data: domain::UserPartial,
-    ) -> Result<User, AppError>;
+    async fn create_user(&mut self, id: UserId, data: User) -> Result<User, AppError>;
 
-    async fn get_user(&self, id: UserId) -> Result<Option<domain::User>, AppError>;
+    async fn update_user(&mut self, id: UserId, data: UserPartial) -> Result<User, AppError>;
 
-    async fn get_users(&self) -> Result<Option<Vec<domain::User>>, AppError>;
+    async fn delete_user(&mut self, id: UserId) -> Result<User, AppError>;
 }

@@ -1,4 +1,4 @@
-/// These models are for `API`, they can differ from domain models
+/// These models are for `API`, they can (and in serious applications will) differ from domain models
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -18,6 +18,7 @@ pub struct CreateUser {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateUser {
+    pub id: String,
     pub name: Option<String>,
     pub surname: Option<String>,
     pub age: Option<u8>,
