@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use axum::async_trait;
-use tokio::sync::Mutex;
 
 use crate::{
     domain::{self, User, UserId},
@@ -12,13 +11,13 @@ use super::UsersCrud;
 
 /// State shared across all routes, our `cache`
 pub struct CachedState {
-    users: Mutex<HashMap<domain::UserId, domain::User>>,
+    users: HashMap<domain::UserId, domain::User>,
 }
 
 impl CachedState {
     pub fn new() -> Self {
         Self {
-            users: Mutex::new(HashMap::<domain::UserId, domain::User>::new()),
+            users: HashMap::<domain::UserId, domain::User>::new(),
         }
     }
 }
@@ -27,9 +26,7 @@ impl CachedState {
 #[async_trait]
 impl UsersCrud for CachedState {
     async fn get_user(&self, id: UserId) -> Result<std::option::Option<domain::User>, AppError> {
-        let users = self.users.lock().await;
-
-        if let Some(user) = users.get(&id) {
+        if let Some(user) = self.users.get(&id) {
             return Ok(Some(user.clone()));
         };
 
@@ -39,8 +36,6 @@ impl UsersCrud for CachedState {
     async fn get_users(&self) -> Result<std::option::Option<Vec<domain::User>>, AppError> {
         let users = self
             .users
-            .lock()
-            .await
             .iter()
             .map(|v| v.1.clone())
             .collect::<Vec<User>>();
@@ -49,13 +44,11 @@ impl UsersCrud for CachedState {
     }
 
     async fn create_user(&mut self, id: UserId, data: domain::User) -> Result<User, AppError> {
-        let mut users = self.users.lock().await;
-
-        if let Some(_) = users.get(&id) {
+        if let Some(_) = self.users.get(&id) {
             return Err(AppError::UserAlreadyExist(id));
         }
 
-        users.insert(id, data.clone());
+        self.users.insert(id, data.clone());
 
         Ok(data)
     }
@@ -65,9 +58,7 @@ impl UsersCrud for CachedState {
         id: UserId,
         data: domain::UserPartial,
     ) -> Result<User, AppError> {
-        let mut users = self.users.lock().await;
-
-        if let Some(user) = users.get_mut(&id) {
+        if let Some(user) = self.users.get_mut(&id) {
             if let Some(name) = data.name {
                 user.name = name;
             }
@@ -87,9 +78,7 @@ impl UsersCrud for CachedState {
     }
 
     async fn delete_user(&mut self, id: UserId) -> Result<User, AppError> {
-        let mut users = self.users.lock().await;
-
-        if let Some(deleted) = users.remove(&id) {
+        if let Some(deleted) = self.users.remove(&id) {
             return Ok(deleted);
         }
 
